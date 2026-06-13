@@ -71,12 +71,10 @@ namespace JSI
         private MechJebModuleDockingAutopilot mjDockingAutoPilot = null;
         private MechJebModuleRendezvousAutopilot mjRendezvousAutopilot = null;
         private MechJebModuleTranslatron mjTranslatron = null;
-        private MechJebModuleSpaceplaneAutopilot mjSpacePlaneAutopilot = null;
         private MechJebModuleLandingPredictions mjLandingPredictions = null;
         private MechJebModuleLandingGuidance mjLandingGuidance = null;
         private MechJebModuleWarpController mjWarpController = null;
         private MechJebModuleStageStats mjStageStats = null;
-        private MechJebModuleAirplaneGuidance mjAirplaneGuidance = null;
         private Vessel activeVessel = null;
 
         private TextMenu smartassOrbitalMenu;
@@ -141,10 +139,6 @@ namespace JSI
             topMenu.AddMenuItem("Translatron", () => PushMenu(BuildTranslatronMenu()));
             topMenu.AddMenuItem("Rover Autopilot", () => PushMenu(BuildRoverMenu()),
                 () => vessel != null && vessel.Landed);
-            topMenu.AddMenuItem("Aircraft Autopilot", () => PushMenu(BuildAircraftMenu()),
-                () => vessel != null && vessel.atmDensity > 0);
-            topMenu.AddMenuItem("Spaceplane Guidance", () => PushMenu(BuildSpaceplaneMenu()),
-                () => vessel != null && vessel.atmDensity > 0);
             topMenu.AddMenuItem("Utilities", () => PushMenu(BuildUtilitiesMenu()));
             topMenu.AddMenuItem("Info Display", () => PushMenu(BuildInfoMenu()));
             topMenu.AddMenuItem("Settings", () => PushMenu(BuildSettingsMenu()));
@@ -1274,240 +1268,7 @@ namespace JSI
         }
         #endregion
 
-        #region Aircraft Menu
-        private bool IsAircraftAutopilotEngaged()
-        {
-            return mjCore?.Airplane?.Users != null &&
-                   mjAirplaneGuidance != null &&
-                   mjCore.Airplane.Users.Contains(mjAirplaneGuidance);
-        }
 
-        private void SetAircraftAutopilotEngaged(bool engaged)
-        {
-            if (mjCore?.Airplane?.Users == null || mjAirplaneGuidance == null) return;
-
-            if (engaged)
-            {
-                SyncAirplaneGuidanceTargetsToAutopilot();
-                if (!mjCore.Airplane.Users.Contains(mjAirplaneGuidance))
-                    mjCore.Airplane.Users.Add(mjAirplaneGuidance);
-            }
-            else
-            {
-                if (mjCore.Airplane.Users.Contains(mjAirplaneGuidance))
-                    mjCore.Airplane.Users.Remove(mjAirplaneGuidance);
-            }
-        }
-
-        private void SyncAirplaneGuidanceTargetsToAutopilot()
-        {
-            if (mjCore?.Airplane == null || mjAirplaneGuidance == null) return;
-
-            if (mjAirplaneGuidance.AltitudeTargettmp != null)
-                mjCore.Airplane.AltitudeTarget = mjAirplaneGuidance.AltitudeTargettmp.Val;
-            if (mjAirplaneGuidance.VertSpeedTargettmp != null)
-                mjCore.Airplane.VertSpeedTarget = mjAirplaneGuidance.VertSpeedTargettmp.Val;
-            if (mjAirplaneGuidance.HeadingTargettmp != null)
-                mjCore.Airplane.HeadingTarget = mjAirplaneGuidance.HeadingTargettmp.Val;
-            if (mjAirplaneGuidance.RollTargettmp != null)
-                mjCore.Airplane.RollTarget = mjAirplaneGuidance.RollTargettmp.Val;
-            if (mjAirplaneGuidance.SpeedTargettmp != null)
-                mjCore.Airplane.SpeedTarget = mjAirplaneGuidance.SpeedTargettmp.Val;
-        }
-
-        private double GetAircraftAltitudeTarget()
-        {
-            return mjAirplaneGuidance?.AltitudeTargettmp?.Val ?? mjCore?.Airplane?.AltitudeTarget ?? 0.0;
-        }
-
-        private void SetAircraftAltitudeTarget(double value)
-        {
-            if (mjAirplaneGuidance?.AltitudeTargettmp != null)
-                mjAirplaneGuidance.AltitudeTargettmp.Val = value;
-            if (mjCore?.Airplane != null)
-                mjCore.Airplane.AltitudeTarget = value;
-        }
-
-        private double GetAircraftVertSpeedTarget()
-        {
-            return mjAirplaneGuidance?.VertSpeedTargettmp?.Val ?? mjCore?.Airplane?.VertSpeedTarget ?? 0.0;
-        }
-
-        private void SetAircraftVertSpeedTarget(double value)
-        {
-            if (mjAirplaneGuidance?.VertSpeedTargettmp != null)
-                mjAirplaneGuidance.VertSpeedTargettmp.Val = value;
-            if (mjCore?.Airplane != null)
-                mjCore.Airplane.VertSpeedTarget = value;
-        }
-
-        private double GetAircraftHeadingTarget()
-        {
-            return mjAirplaneGuidance?.HeadingTargettmp?.Val ?? mjCore?.Airplane?.HeadingTarget ?? 0.0;
-        }
-
-        private void SetAircraftHeadingTarget(double value)
-        {
-            if (mjAirplaneGuidance?.HeadingTargettmp != null)
-                mjAirplaneGuidance.HeadingTargettmp.Val = value;
-            if (mjCore?.Airplane != null)
-                mjCore.Airplane.HeadingTarget = value;
-        }
-
-        private double GetAircraftRollTarget()
-        {
-            return mjAirplaneGuidance?.RollTargettmp?.Val ?? mjCore?.Airplane?.RollTarget ?? 0.0;
-        }
-
-        private void SetAircraftRollTarget(double value)
-        {
-            if (mjAirplaneGuidance?.RollTargettmp != null)
-                mjAirplaneGuidance.RollTargettmp.Val = value;
-            if (mjCore?.Airplane != null)
-                mjCore.Airplane.RollTarget = value;
-        }
-
-        private double GetAircraftSpeedTarget()
-        {
-            return mjAirplaneGuidance?.SpeedTargettmp?.Val ?? mjCore?.Airplane?.SpeedTarget ?? 0.0;
-        }
-
-        private void SetAircraftSpeedTarget(double value)
-        {
-            if (mjAirplaneGuidance?.SpeedTargettmp != null)
-                mjAirplaneGuidance.SpeedTargettmp.Val = value;
-            if (mjCore?.Airplane != null)
-                mjCore.Airplane.SpeedTarget = value;
-        }
-
-        private TextMenu BuildAircraftMenu()
-        {
-            var menu = new TextMenu();
-            menu.labelColor = JUtil.ColorToColorTag(Color.white);
-            menu.selectedColor = JUtil.ColorToColorTag(Color.green);
-            menu.disabledColor = JUtil.ColorToColorTag(Color.gray);
-
-            menu.AddMenuItem(
-                () => IsAircraftAutopilotEngaged() ? "Disengage Autopilot" : "Engage Autopilot",
-                () => SetAircraftAutopilotEngaged(!IsAircraftAutopilotEngaged()));
-            menu.AddMenuItem("------", null);
-
-            menu.AddMenuItem("-- ALTITUDE --", null);
-            menu.AddToggleItem("Altitude Hold",
-                () => mjCore.Airplane.AltitudeHoldEnabled,
-                (val) =>
-                {
-                    mjCore.Airplane.AltitudeHoldEnabled = val;
-                    if (val)
-                    {
-                        SyncAirplaneGuidanceTargetsToAutopilot();
-                        mjCore.Airplane.EnableAltitudeHold();
-                    }
-                    else
-                    {
-                        mjCore.Airplane.DisableAltitudeHold();
-                    }
-                });
-            menu.AddNumericItem("Target Altitude", GetAircraftAltitudeTarget, SetAircraftAltitudeTarget,
-                50.0, v => v.ToString("F0") + " m", null, true, 0, false, 0);
-            menu.AddToggleItem("Vertical Speed Hold",
-                () => mjCore.Airplane.VertSpeedHoldEnabled,
-                (val) =>
-                {
-                    mjCore.Airplane.VertSpeedHoldEnabled = val;
-                    if (val)
-                    {
-                        SyncAirplaneGuidanceTargetsToAutopilot();
-                        mjCore.Airplane.EnableVertSpeedHold();
-                    }
-                    else
-                    {
-                        mjCore.Airplane.DisableVertSpeedHold();
-                    }
-                });
-            menu.AddNumericItem("Target Vert Speed", GetAircraftVertSpeedTarget, SetAircraftVertSpeedTarget,
-                1.0, v => v.ToString("F1") + " m/s", null, false, 0, false, 0);
-
-            menu.AddMenuItem("------", null);
-
-            menu.AddMenuItem("-- HEADING --", null);
-            menu.AddToggleItem("Heading Hold",
-                () => mjCore.Airplane.HeadingHoldEnabled,
-                (val) =>
-                {
-                    mjCore.Airplane.HeadingHoldEnabled = val;
-                    if (val)
-                    {
-                        SyncAirplaneGuidanceTargetsToAutopilot();
-                        mjCore.Airplane.EnableHeadingHold();
-                    }
-                    else
-                    {
-                        mjCore.Airplane.DisableHeadingHold();
-                    }
-                });
-            menu.AddNumericItem("Target Heading", GetAircraftHeadingTarget, SetAircraftHeadingTarget,
-                1.0, v => v.ToString("F1") + "°", null, true, 0, true, 360);
-            menu.AddToggleItem("Roll Hold",
-                () => mjCore.Airplane.RollHoldEnabled,
-                (val) => { if (val) { SyncAirplaneGuidanceTargetsToAutopilot(); mjCore.Airplane.RollHoldEnabled = true; } else mjCore.Airplane.RollHoldEnabled = false; });
-            menu.AddNumericItem("Target Roll", GetAircraftRollTarget, SetAircraftRollTarget,
-                1.0, v => v.ToString("F1") + "°", null, true, -180, true, 180);
-
-            menu.AddMenuItem("------", null);
-
-            menu.AddMenuItem("-- SPEED --", null);
-            menu.AddToggleItem("Speed Hold",
-                () => mjCore.Airplane.SpeedHoldEnabled,
-                (val) =>
-                {
-                    mjCore.Airplane.SpeedHoldEnabled = val;
-                    if (val)
-                    {
-                        SyncAirplaneGuidanceTargetsToAutopilot();
-                        mjCore.Airplane.EnableSpeedHold();
-                    }
-                    else
-                    {
-                        mjCore.Airplane.DisableSpeedHold();
-                    }
-                });
-            menu.AddNumericItem("Target Speed", GetAircraftSpeedTarget, SetAircraftSpeedTarget,
-                1.0, v => v.ToString("F1") + " m/s", null, true, 0, false, 0);
-
-            menu.AddMenuItem("[BACK]", () => PopMenu());
-
-            return menu;
-        }
-        #endregion
-
-        #region Spaceplane Menu
-        private TextMenu BuildSpaceplaneMenu()
-        {
-            var menu = new TextMenu();
-            menu.labelColor = JUtil.ColorToColorTag(Color.white);
-            menu.selectedColor = JUtil.ColorToColorTag(Color.green);
-            menu.disabledColor = JUtil.ColorToColorTag(Color.gray);
-
-            menu.AddMenuItem("Autoland", () => mjSpacePlaneAutopilot.Autoland(null));
-            menu.AddMenuItem("Hold Heading & Altitude", () => { var ap = mjSpacePlaneAutopilot?.Autopilot; if (ap != null) { ap.HeadingHoldEnabled = true; ap.AltitudeHoldEnabled = true; } });
-            menu.AddMenuItem("Autopilot OFF", mjSpacePlaneAutopilot.AutopilotOff);
-
-            menu.AddMenuItem("------", null);
-
-            menu.AddMJItem("Glideslope", mjSpacePlaneAutopilot.glideslope,
-                0.1, v => v.ToString("F1") + "°", null, true, 0, true, 30);
-            menu.AddMJItem("Approach Speed", mjSpacePlaneAutopilot.approachSpeed,
-                1.0, v => v.ToString("F1") + " m/s", null, true, 0, false, 0);
-            menu.AddMJItem("Touchdown Speed", mjSpacePlaneAutopilot.touchdownSpeed,
-                1.0, v => v.ToString("F1") + " m/s", null, true, 0, false, 0);
-
-            menu.AddMenuItem("[BACK]", () => PopMenu());
-
-            return menu;
-        }
-
-        #endregion
 
         #region Utilities Menu
         private TextMenu BuildUtilitiesMenu()
@@ -1762,12 +1523,10 @@ namespace JSI
                 mjDockingAutoPilot = null;
                 mjRendezvousAutopilot = null;
                 mjTranslatron = null;
-                mjSpacePlaneAutopilot = null;
                 mjLandingPredictions = null;
                 mjLandingGuidance = null;
                 mjWarpController = null;
                 mjStageStats = null;
-                mjAirplaneGuidance = null;
 
                 activeVessel = vessel;
                 mjCore = vessel.GetMasterMechJeb();
@@ -1777,12 +1536,10 @@ namespace JSI
                     mjDockingAutoPilot = mjCore.GetComputerModule<MechJebModuleDockingAutopilot>();
                     mjRendezvousAutopilot = mjCore.GetComputerModule<MechJebModuleRendezvousAutopilot>();
                     mjTranslatron = mjCore.GetComputerModule<MechJebModuleTranslatron>();
-                    mjSpacePlaneAutopilot = mjCore.GetComputerModule<MechJebModuleSpaceplaneAutopilot>();
                     mjLandingPredictions = mjCore.GetComputerModule<MechJebModuleLandingPredictions>();
                     mjLandingGuidance = mjCore.GetComputerModule<MechJebModuleLandingGuidance>();
                     mjWarpController = mjCore.GetComputerModule<MechJebModuleWarpController>();
                     mjStageStats = mjCore.GetComputerModule<MechJebModuleStageStats>();
-                    mjAirplaneGuidance = mjCore.GetComputerModule<MechJebModuleAirplaneGuidance>();
                 }
             }
 

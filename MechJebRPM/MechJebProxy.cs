@@ -68,7 +68,7 @@ namespace JSI
         internal static FieldInfo f_Rover_BrakeOnEject;
         internal static FieldInfo f_Rover_BrakeOnEnergyDepletion;
         internal static FieldInfo f_Rover_WarpToDaylight;
-        internal static FieldInfo f_Airplane_RollHold;
+
         internal static FieldInfo f_Generic_PlanCapture;
         internal static FieldInfo f_Generic_Coplanar;
         internal static FieldInfo f_InterplanetaryTransfer_WaitForPhaseAngle;
@@ -174,7 +174,6 @@ namespace JSI
             f_Rover_BrakeOnEject = typeof(MechJebModuleRoverController).GetField(nameof(MechJebModuleRoverController.BrakeOnEject), BindingFlags.Public | BindingFlags.Instance);
             f_Rover_BrakeOnEnergyDepletion = typeof(MechJebModuleRoverController).GetField(nameof(MechJebModuleRoverController.BrakeOnEnergyDepletion), BindingFlags.Public | BindingFlags.Instance);
             f_Rover_WarpToDaylight = typeof(MechJebModuleRoverController).GetField(nameof(MechJebModuleRoverController.WarpToDaylight), BindingFlags.Public | BindingFlags.Instance);
-            f_Airplane_RollHold = typeof(MechJebModuleAirplaneAutopilot).GetField(nameof(MechJebModuleAirplaneAutopilot.RollHoldEnabled), BindingFlags.Public | BindingFlags.Instance);
             f_Generic_PlanCapture = typeof(OperationGeneric).GetField(nameof(OperationGeneric.PlanCapture), BindingFlags.Public | BindingFlags.Instance);
             f_Generic_Coplanar = typeof(OperationGeneric).GetField(nameof(OperationGeneric.Coplanar), BindingFlags.Public | BindingFlags.Instance);
             f_InterplanetaryTransfer_WaitForPhaseAngle = typeof(OperationInterplanetaryTransfer).GetField(nameof(OperationInterplanetaryTransfer.WaitForPhaseAngle), BindingFlags.Public | BindingFlags.Instance);
