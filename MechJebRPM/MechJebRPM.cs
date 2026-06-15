@@ -591,8 +591,6 @@ namespace JSI
             menu.AddMenuItem("return from a moon", () => PushMenu(BuildOperationMenu(MechJebProxy.OpMoonReturn, PopulatedMoonReturnMenu)),
                 () => vessel != null && vessel.mainBody != null && vessel.mainBody.referenceBody != null && 
                         vessel.mainBody.referenceBody != Planetarium.fetch.Sun);
-            menu.AddMenuItem("transfer to another planet", () => PushMenu(BuildOperationMenu(MechJebProxy.OpInterplanetaryTransfer, PopulateInterplanetaryTransferMenu)),
-                () => FlightGlobals.fetch.VesselTarget is CelestialBody);
             menu.AddMenuItem("two impulse (Hohmann) transfer to target", () => PushMenu(BuildOperationMenu(MechJebProxy.OpGeneric, PopulateHohmannMenu)),
                 () => FlightGlobals.fetch.VesselTarget != null);
 
@@ -859,12 +857,6 @@ namespace JSI
             var op = baseOp as OperationMoonReturn;
             menu.AddMJItem("Return altitude", MechJebProxy.OpMoonReturn.MoonReturnAltitude,
                 10.0, v => (v / 1000.0).ToString("F0") + " km", null, true, 10, false, 0);
-        }
-
-        private void PopulateInterplanetaryTransferMenu(TextMenu menu, Operation baseOp)
-        {
-            var op = baseOp as OperationInterplanetaryTransfer;
-            menu.AddToggleItem("Wait for optimal phase angle", op, MechJebProxy.f_InterplanetaryTransfer_WaitForPhaseAngle);
         }
 
         private TextMenu BuildAdvancedTransferMenu()

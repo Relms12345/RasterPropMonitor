@@ -844,18 +844,14 @@ namespace JSI
                 Vector3d dV;
                 double nodeUT = 0.0;
 
-                if (o.referenceBody == targetOrbit.referenceBody)
-                {
-                    Vector3d dV2;
-                    double nodeUT2;
+                if (o.referenceBody != targetOrbit.referenceBody)
+                    return;
 
-                    // TODO: should we use the 2nd one sometimes?
-                    (dV, nodeUT, dV2, nodeUT2) = OrbitalManeuverCalculator.DeltaVAndTimeForHohmannTransfer(o, targetOrbit, Planetarium.GetUniversalTime());
-                }
-                else
-                {
-                    dV = OrbitalManeuverCalculator.DeltaVAndTimeForInterplanetaryTransferEjection(o, Planetarium.GetUniversalTime(), targetOrbit, true, out nodeUT);
-                }
+                Vector3d dV2;
+                double nodeUT2;
+
+                // TODO: should we use the 2nd one sometimes?
+                (dV, nodeUT, dV2, nodeUT2) = OrbitalManeuverCalculator.DeltaVAndTimeForHohmannTransfer(o, targetOrbit, Planetarium.GetUniversalTime());
 
                 JUtil.RemoveAllNodes(vessel.patchedConicSolver);
 

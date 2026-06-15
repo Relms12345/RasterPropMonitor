@@ -71,7 +71,6 @@ namespace JSI
 
         internal static FieldInfo f_Generic_PlanCapture;
         internal static FieldInfo f_Generic_Coplanar;
-        internal static FieldInfo f_InterplanetaryTransfer_WaitForPhaseAngle;
         internal static FieldInfo f_AdvancedTransfer_IncludeCaptureBurn;
         #endregion
 
@@ -123,7 +122,6 @@ namespace JSI
                     else if (op is OperationLongitude olo) OpLongitude = olo;
                     else if (op is OperationResonantOrbit oro) OpResonantOrbit = oro;
                     else if (op is OperationMoonReturn omr) OpMoonReturn = omr;
-                    else if (op is OperationInterplanetaryTransfer oit) OpInterplanetaryTransfer = oit;
                     else if (op is OperationPlane opl) OpMatchPlane = opl;
                     else if (op is OperationKillRelVel okr) OpMatchVelocity = okr;
                 }
@@ -176,7 +174,6 @@ namespace JSI
             f_Rover_WarpToDaylight = typeof(MechJebModuleRoverController).GetField(nameof(MechJebModuleRoverController.WarpToDaylight), BindingFlags.Public | BindingFlags.Instance);
             f_Generic_PlanCapture = typeof(OperationGeneric).GetField(nameof(OperationGeneric.PlanCapture), BindingFlags.Public | BindingFlags.Instance);
             f_Generic_Coplanar = typeof(OperationGeneric).GetField(nameof(OperationGeneric.Coplanar), BindingFlags.Public | BindingFlags.Instance);
-            f_InterplanetaryTransfer_WaitForPhaseAngle = typeof(OperationInterplanetaryTransfer).GetField(nameof(OperationInterplanetaryTransfer.WaitForPhaseAngle), BindingFlags.Public | BindingFlags.Instance);
             f_AdvancedTransfer_IncludeCaptureBurn = typeof(OperationAdvancedTransfer).GetField(nameof(OperationAdvancedTransfer.includeCaptureBurn), BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
@@ -196,7 +193,6 @@ namespace JSI
         public static OperationLongitude OpLongitude { get; private set; }
         public static OperationResonantOrbit OpResonantOrbit { get; private set; }
         public static OperationMoonReturn OpMoonReturn { get; private set; }
-        public static OperationInterplanetaryTransfer OpInterplanetaryTransfer { get; private set; }
         public static OperationPlane OpMatchPlane { get; private set; }
         public static OperationKillRelVel OpMatchVelocity { get; private set; }
         #endregion
